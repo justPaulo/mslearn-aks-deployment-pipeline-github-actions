@@ -36,5 +36,20 @@ jobs:
         uses: Azure/aks-set-context@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          resource-group: <your-resource-group>
+          # Resource Group Name
+          resource-group: mslearn-gh-pipelines-6667
+          # AKS Cluster Name
           cluster-name: contoso-video
+
+      - name: Run Helm Deploy
+        run: |
+          helm upgrade \
+            --install \
+            --create-namespace \
+            --atomic \
+            --wait \
+            --namespace staging \
+            contoso-website \
+            ./kubernetes/contoso-website \
+            --set image.repository=${{ secrets.ACR_NAME }} \
+            --set dns.name=${{ secrets.DNS_NAME }}
